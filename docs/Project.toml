@@ -1,0 +1,3 @@
+[deps]
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+LoKIHelpers = "7ddd7a0d-1547-4834-a58c-7f499370e9a9"
