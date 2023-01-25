@@ -3,6 +3,13 @@ uuid = "7ddd7a0d-1547-4834-a58c-7f499370e9a9"
 authors = ["Jan Kuhfeld <jan.kuhfeld@rub.de> and contributors"]
 version = "0.1.0"
 
+[deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+DataInterpolations = "82cc6244-b520-54b8-b5a6-8a565e85f1d0"
+SafeTestsets = "1bc83da4-3b8d-516f-aca4-4fe02f6d838f"
+Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
+
 [compat]
 julia = "1"
 
