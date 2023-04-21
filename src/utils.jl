@@ -1,5 +1,5 @@
 using CSV,DataFrames
-using DataInterpolations
+using Interpolations
 
 function lookup_rate(name, loki_folder)
     lookup_file = loki_folder * "lookUpTableRateCoeff.txt"
@@ -8,7 +8,10 @@ function lookup_rate(name, loki_folder)
         delim=' ',
         ignorerepeated=true
     )
-    df[!,1], df[!,name*"(m^3s^-1)"]
+    #HACK: CSV.read returns SentinalArrays.ChainedVector under some
+    #conditions, and findmin always returns index 1 for these. collect()
+    #converts to Vector, to prevent this
+    collect(df[!,1]), collect(df[!,name*"(m^3s^-1)"])
 end
 
 function lookup_swarm(name, loki_folder)
@@ -18,17 +21,17 @@ function lookup_swarm(name, loki_folder)
         delim=' ',
         ignorerepeated=true
     )
-    df[!,1], df[!,name]
+    collect(df[!,1]), collect(df[!,name])
 end
 
-findclosest(a,A) = findmin(x->abs.(x.-a), A)[2]
-function reduced_interpolation(f,x, N; xmin=0, xmax=500, interpolation=LinearInterpolation)
+findclosest(a,A) = findmin(x->abs.(x.-a), A,)[2]
+function reduced_interpolation(x, f, N; xmin=0, xmax=500, interpolation=linear_interpolation)
     is = findclosest.([0;exp.(range(0,log(xmax),N))], Ref(x)) |> unique
-    return interpolation(f[is], x[is])
+    return interpolation(x[is],f[is])
 end
 
 
-function loki_rate(indices, loki_folder;name=nothing,N=20, interpolation=LinearInterpolation)
+function loki_rate(indices, loki_folder;name=nothing,N=20, interpolation=linear_interpolation)
     if indices isa Vector 
         ks = []
         E = []
@@ -42,11 +45,11 @@ function loki_rate(indices, loki_folder;name=nothing,N=20, interpolation=LinearI
         E,k = lookup_rate(indices, loki_folder)
         name = name === nothing ?  indices : name
     end
-    interp = N===nothing ? interpolation(k,E) : reduced_interpolation(k,E,N;interpolation)  
+    interp = N===nothing ? interpolation(E,k) : reduced_interpolation(E,k,N;interpolation)  
     return LoKIRateCoefficient(Symbol(name),interp)
 end
 
-function loki_swarm(indices, loki_folder; N=20, interpolation=LinearInterpolation)
+function loki_swarm(indices, loki_folder; N=20, interpolation=linear_interpolation)
     if indices isa Vector
         ks = []
         E = []
@@ -58,7 +61,7 @@ function loki_swarm(indices, loki_folder; N=20, interpolation=LinearInterpolatio
     else
         E, k = lookup_swarm(indices,loki_folder)
     end
-    interp = N===nothing ? interpolation(k,E) : reduced_interpolation(k,E,N;interpolation)  
+    interp = N===nothing ? interpolation(E,k) : reduced_interpolation(E,k,N;interpolation)  
     return interp
 end
 

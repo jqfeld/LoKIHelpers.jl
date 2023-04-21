@@ -1,7 +1,9 @@
 module LoKIHelpers
-using DataInterpolations
+using Interpolations
 
 # not needed for now
+# TODO: make LoKIReaction compatible with Catalyst reactions, some conversion
+# function maybe
 struct LoKIReaction{S,T}
     """The rate function (excluding mass action terms)."""
     rate::Any
