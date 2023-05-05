@@ -26,7 +26,7 @@ end
 
 findclosest(a,A) = findmin(x->abs.(x.-a), A,)[2]
 function reduced_interpolation(x, f, N; xmin=0, xmax=500, interpolation=linear_interpolation)
-    is = findclosest.([0;exp.(range(0,log(xmax),N))], Ref(x)) |> unique
+    is = findclosest.([xmin;exp.(range(0,log(xmax),N))], Ref(x)) |> unique
     return interpolation(x[is],f[is])
 end
 
